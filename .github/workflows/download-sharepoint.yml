@@ -46,8 +46,9 @@ jobs:
 
           echo "DRIVE_ID=$DRIVE_ID" >> $GITHUB_ENV
 
-      - name: List Stephen Folder
+      - name: Find Workbook
         run: |
           curl -s \
             -H "Authorization: Bearer $TOKEN" \
-            "https://graph.microsoft.com/v1.0/drives/$DRIVE_ID/root:/Stephen:/children"
+            "https://graph.microsoft.com/v1.0/drives/$DRIVE_ID/root:/Stephen:/children" \
+            | jq '.value[] | select(.name=="Member Database SP.xlsx")'
