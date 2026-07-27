@@ -35,8 +35,19 @@ jobs:
 
           echo "SITE_ID=$SITE_ID" >> $GITHUB_ENV
 
-      - name: List Drives
+      - name: Find Documents Drive
+        run: |
+          DRIVE_ID=$(curl -s \
+            -H "Authorization: Bearer $TOKEN" \
+            "https://graph.microsoft.com/v1.0/sites/$SITE_ID/drives" \
+            | jq -r '.value[] | select(.name=="Documents") | .id')
+
+          echo "Drive ID: $DRIVE_ID"
+
+          echo "DRIVE_ID=$DRIVE_ID" >> $GITHUB_ENV
+
+      - name: List Stephen Folder
         run: |
           curl -s \
             -H "Authorization: Bearer $TOKEN" \
-            "https://graph.microsoft.com/v1.0/sites/$SITE_ID/drives"
+            "https://graph.microsoft.com/v1.0/drives/$DRIVE_ID/root:/Stephen:/children"
