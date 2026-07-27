@@ -26,14 +26,17 @@ jobs:
 
       - name: Get SharePoint Site ID
         run: |
-          SITE=$(curl -s \
+          SITE_ID=$(curl -s \
             -H "Authorization: Bearer $TOKEN" \
-            "https://graph.microsoft.com/v1.0/sites/solvdesignstudio.sharepoint.com:/sites/solvdesign")
+            "https://graph.microsoft.com/v1.0/sites/solvdesignstudio.sharepoint.com:/sites/solvdesign" \
+            | jq -r '.id')
 
-          echo "$SITE"
+          echo "Site ID: $SITE_ID"
+
+          echo "SITE_ID=$SITE_ID" >> $GITHUB_ENV
 
       - name: List Drives
         run: |
           curl -s \
             -H "Authorization: Bearer $TOKEN" \
-            "https://graph.microsoft.com/v1.0/sites/solvdesignstudio.sharepoint.com:/sites/solvdesign/drives"
+            "https://graph.microsoft.com/v1.0/sites/$SITE_ID/drives"
