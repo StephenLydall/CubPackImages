@@ -11,6 +11,9 @@ jobs:
   render:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write
+
     steps:
 
       - name: Checkout repository
@@ -50,16 +53,32 @@ jobs:
             -H "Authorization: Bearer $TOKEN" \
             "https://graph.microsoft.com/v1.0/drives/$DRIVE_ID/root:/Stephen/Member%20Database%20SP.xlsx:/content" \
             --output "Member Database SP.xlsx"
-
+            
+      - name: Verify workbook
+        run: |
+          ls -lh "Member Database SP.xlsx"
+          
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.x"
 
       - name: Install dependencies
-        run: |
-          pip install -r requirements.txt
+        run: pip install -r requirements.txt
 
-      - name: Run renderer pipeline
+      - name: Run update pipeline
+        run: python update_keys.py
+
+      - name: Commit generated files
         run: |
-          python update_keys.py
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add .
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Automated render update"
+            git push
+          fi
