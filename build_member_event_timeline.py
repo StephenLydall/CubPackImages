@@ -1,14 +1,17 @@
 import pandas as pd
 from datetime import datetime
 
-EXCEL_PATH = r"E:\Solv Design Studio\Solv - Documents\Stephen\Member Database SP.xlsx"
+from config import (
+    EXCEL_FILE,
+    TIMELINE_CSV,
+)
 
 # -------------------------------------------------
 # BLOCK 1: Load tables
 # -------------------------------------------------
 
 participation = pd.read_excel(
-    EXCEL_PATH,
+    EXCEL_FILE,
     sheet_name="Participation Table",
     header=8,
     engine="openpyxl"
@@ -16,7 +19,7 @@ participation = pd.read_excel(
 participation.columns = participation.columns.str.strip()
 
 programs = pd.read_excel(
-    EXCEL_PATH,
+    EXCEL_FILE,
     sheet_name="Program Table",
     header=2,
     engine="openpyxl"
@@ -24,7 +27,7 @@ programs = pd.read_excel(
 programs.columns = programs.columns.str.strip()
 
 sixlog = pd.read_excel(
-    EXCEL_PATH,
+    EXCEL_FILE,
     sheet_name="SixLog",
     header=0,
     engine="openpyxl"
@@ -32,7 +35,7 @@ sixlog = pd.read_excel(
 sixlog.columns = sixlog.columns.str.strip()
 
 interest_badges = pd.read_excel(
-    EXCEL_PATH,
+    EXCEL_FILE,
     sheet_name="Interest Badge Log",
     header=0,
     engine="openpyxl"
@@ -40,7 +43,7 @@ interest_badges = pd.read_excel(
 interest_badges.columns = interest_badges.columns.str.strip()
 
 advancements = pd.read_excel(
-    EXCEL_PATH,
+    EXCEL_FILE,
     sheet_name="Advancement Log",
     header=0,
     engine="openpyxl"
@@ -456,10 +459,6 @@ final_df["ImageFile"] = (
 # BLOCK 11: Export
 # -------------------------------------------------
 
-timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-output_file = f"MemberEventTimeline_FULL_{timestamp}.csv"
+final_df.to_csv(TIMELINE_CSV, index=False)
 
-final_df.to_csv(output_file, index=False)
-
-print(f"[DONE] {output_file} created")
-print(final_df.head(10))
+print(f"[DONE] {TIMELINE_CSV.name} created")
