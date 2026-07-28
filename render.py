@@ -6,7 +6,7 @@ import pandas as pd
 from config import (
     BASE_IMAGES,
     BACKGROUND_IMAGES,
-    LOCAL_RENDER_OUTPUT,
+    GITHUB_DOCS,
     TO_RENDER_CSV,
 )
 
@@ -15,7 +15,7 @@ from config import (
 # -----------------------------
 BASE_IMAGE_DIR = BASE_IMAGES
 BACKGROUND_DIR = BACKGROUND_IMAGES
-OUTPUT_DIR = LOCAL_RENDER_OUTPUT
+OUTPUT_DIR = GITHUB_DOCS
 
 CANVAS_WIDTH = 856
 CANVAS_HEIGHT = 140
