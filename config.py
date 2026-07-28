@@ -48,7 +48,3 @@ BASE_IMAGES = GITHUB_DOCS / "app-assets"
 BACKGROUND_IMAGES = GITHUB_DOCS / "backgrounds"
 
 OTHER_IMAGES = PROJECT_ROOT / "other_images"
-
-LOCAL_RENDER_OUTPUT = PROJECT_ROOT / "renders_script"
-
-MANUAL_RENDER_OUTPUT = PROJECT_ROOT / "renders_manual"
