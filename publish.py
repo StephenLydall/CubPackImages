@@ -1,47 +1,52 @@
-import shutil
 from pathlib import Path
 import subprocess
 
-# -----------------------------
-# Configuration
-# -----------------------------
-SOURCE_DIR = Path(r"E:\PythonRender\image_renderer\renders_script")
-REPO_DIR = Path(r"E:\GitHub\CubPackImages")
-DEST_DIR = REPO_DIR / "docs"
+from config import GITHUB_REPO
 
 COMMIT_MESSAGE = "Automated render update"
 
 # -----------------------------
-# Step 1: Copy rendered images to repo
+# Git pull first
 # -----------------------------
-DEST_DIR.mkdir(parents=True, exist_ok=True)
-
-for img_file in SOURCE_DIR.glob("*.png"):
-    dest_file = DEST_DIR / img_file.name
-    shutil.copy2(img_file, dest_file)
-    print(f"[COPY] {img_file.name}")
-
-# -----------------------------
-# Step 2: Git pull first to avoid push errors
-# -----------------------------
-subprocess.run(["git", "pull", "origin", "main", "--rebase"], cwd=REPO_DIR)
-
-# -----------------------------
-# Step 3: Git add / commit / push
-# -----------------------------
-# Stage changes
-subprocess.run(["git", "add", "."], cwd=REPO_DIR)
-
-# Check if there’s anything to commit
-status_result = subprocess.run(
-    ["git", "status", "--porcelain"], cwd=REPO_DIR, capture_output=True, text=True
+subprocess.run(
+    ["git", "pull", "origin", "main", "--rebase"],
+    cwd=GITHUB_REPO,
+    check=True
 )
 
-if status_result.stdout.strip() == "":
+# -----------------------------
+# Stage all changes
+# -----------------------------
+subprocess.run(
+    ["git", "add", "."],
+    cwd=GITHUB_REPO,
+    check=True
+)
+
+# -----------------------------
+# Check if anything changed
+# -----------------------------
+status = subprocess.run(
+    ["git", "status", "--porcelain"],
+    cwd=GITHUB_REPO,
+    capture_output=True,
+    text=True,
+    check=True
+)
+
+if not status.stdout.strip():
     print("✅ No changes to commit.")
 else:
-    # Commit changes
-    subprocess.run(["git", "commit", "-m", COMMIT_MESSAGE], cwd=REPO_DIR)
-    # Push to remote
-    subprocess.run(["git", "push", "origin", "main"], cwd=REPO_DIR)
-    print("[PUSH] Changes committed and pushed to GitHub.")
+    subprocess.run(
+        ["git", "commit", "-m", COMMIT_MESSAGE],
+        cwd=GITHUB_REPO,
+        check=True
+    )
+
+    subprocess.run(
+        ["git", "push", "origin", "main"],
+        cwd=GITHUB_REPO,
+        check=True
+    )
+
+    print("✅ Changes committed and pushed.")
