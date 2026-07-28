@@ -60,4 +60,4 @@ to_render_df = debug_df[debug_df["ToRender"]]
 to_render_df.to_csv(TO_RENDER_CSV, index=False)
 
 print(f"[DONE] {len(to_render_df)} images require rendering.")
-print(f"[DONE] ToRender CSV created: {TO_RENDER_CSV}")
+print(f"[DONE] {TO_RENDER_CSV.name} created")
