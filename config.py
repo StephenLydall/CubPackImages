@@ -45,7 +45,7 @@ APP_ASSETS = GITHUB_DOCS / "app-assets"
 BASE_IMAGES = GITHUB_DOCS / "app-assets"
 
 # Renderer-only assets
-BACKGROUND_IMAGES = PROJECT_ROOT / "backgrounds"
+BACKGROUND_IMAGES = GITHUB_DOCS / "backgrounds"
 
 OTHER_IMAGES = PROJECT_ROOT / "other_images"
 
