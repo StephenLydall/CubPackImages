@@ -2,16 +2,17 @@ env:
   SHAREPOINT_FOLDER: "Stephen"
   WORKBOOK_NAME: "Member Database SP.xlsx"
 
-name: Download SharePoint Workbook
+name: Cub Pack Renderer Pipeline
 
 on:
   workflow_dispatch:
 
 jobs:
-  download:
+  render:
     runs-on: ubuntu-latest
 
     steps:
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -25,18 +26,14 @@ jobs:
             -d "scope=https://graph.microsoft.com/.default" \
             -d "grant_type=client_credentials" \
             "https://login.microsoftonline.com/${{ secrets.AZURE_TENANT_ID }}/oauth2/v2.0/token" | jq -r '.access_token')
-
           echo "TOKEN=$TOKEN" >> $GITHUB_ENV
 
-      - name: Get SharePoint Site ID
+      - name: Get Microsoft Site ID
         run: |
           SITE_ID=$(curl -s \
             -H "Authorization: Bearer $TOKEN" \
             "https://graph.microsoft.com/v1.0/sites/solvdesignstudio.sharepoint.com:/sites/solvdesign" \
             | jq -r '.id')
-
-          echo "Site ID: $SITE_ID"
-
           echo "SITE_ID=$SITE_ID" >> $GITHUB_ENV
 
       - name: Find Documents Drive
@@ -45,19 +42,24 @@ jobs:
             -H "Authorization: Bearer $TOKEN" \
             "https://graph.microsoft.com/v1.0/sites/$SITE_ID/drives" \
             | jq -r '.value[] | select(.name=="Documents") | .id')
-
-          echo "Drive ID: $DRIVE_ID"
-
           echo "DRIVE_ID=$DRIVE_ID" >> $GITHUB_ENV
 
       - name: Download Workbook
         run: |
           curl -L \
             -H "Authorization: Bearer $TOKEN" \
-            "https://graph.microsoft.com/v1.0/drives/$DRIVE_ID/root:/${{ env.SHAREPOINT_FOLDER }}/${{ env.WORKBOOK_NAME }}:/content" \
-            --output "${{ env.WORKBOOK_NAME }}"
+            "https://graph.microsoft.com/v1.0/drives/$DRIVE_ID/root:/Stephen/Member%20Database%20SP.xlsx:/content" \
+            --output "Member Database SP.xlsx"
 
-          echo "Downloaded:"
-          ls -lh "${{ env.WORKBOOK_NAME }}"
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
 
-          file "${{ env.WORKBOOK_NAME }}"
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run renderer pipeline
+        run: |
+          python update_keys.py
