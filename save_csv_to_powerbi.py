@@ -1,33 +1,29 @@
 import pandas as pd
-from pathlib import Path
+
+from config import (
+    TIMELINE_CSV,
+    GITHUB_DATA,
+)
 
 # -----------------------------
 # Configuration
 # -----------------------------
-SOURCE_DIR = Path(r"E:\PythonRender\image_renderer")
-OUTPUT_DIR = Path(r"E:\Solv Design Studio\Solv - Documents\Stephen\PowerBI\PythonCSVs")
-OUTPUT_FILE = OUTPUT_DIR / "MemberEventKey.csv"
+OUTPUT_FILE = GITHUB_DATA / "MemberEventKey.csv"
 
-TIMELINE_PREFIX = "MemberEventTimeline_FULL_"
 REQUIRED_COLUMNS = ["MemberEventKey", "ImageFile"]
 
 # -----------------------------
-# Find latest timeline CSV
+# Load timeline CSV
 # -----------------------------
-timeline_files = list(SOURCE_DIR.glob(f"{TIMELINE_PREFIX}*.csv"))
+if not TIMELINE_CSV.exists():
+    raise FileNotFoundError(f"{TIMELINE_CSV} not found.")
 
-if not timeline_files:
-    raise FileNotFoundError(
-        f"No files found matching {TIMELINE_PREFIX}*.csv in {SOURCE_DIR}"
-    )
-
-latest_timeline = max(timeline_files, key=lambda p: p.stat().st_mtime)
-print(f"[INFO] Using latest timeline: {latest_timeline.name}")
+print(f"[INFO] Using timeline: {TIMELINE_CSV.name}")
 
 # -----------------------------
 # Load and validate CSV
 # -----------------------------
-df = pd.read_csv(latest_timeline)
+df = pd.read_csv(TIMELINE_CSV)
 
 missing_cols = [c for c in REQUIRED_COLUMNS if c not in df.columns]
 if missing_cols:
@@ -53,9 +49,8 @@ if deduped_count < original_count:
 # -----------------------------
 # Write output CSV
 # -----------------------------
-OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+GITHUB_DATA.mkdir(parents=True, exist_ok=True)
 df.to_csv(OUTPUT_FILE, index=False)
 
-print(f"[DONE] MemberEventKey mapping written to:")
-print(f"   {OUTPUT_FILE}")
-print(f"   Total keys: {len(df)}")
+print(f"[DONE] {OUTPUT_FILE.name} created")
+print(f"[INFO] Total keys: {len(df)}")
