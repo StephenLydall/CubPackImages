@@ -41,8 +41,10 @@ APP_ASSETS = GITHUB_DOCS / "app-assets"
 # Image Locations
 # ==========================================================
 
-BASE_IMAGES = PROJECT_ROOT / "base_images"
+# Shared badge images (used by both the app and renderer)
+BASE_IMAGES = GITHUB_DOCS / "app-assets"
 
+# Renderer-only assets
 BACKGROUND_IMAGES = PROJECT_ROOT / "backgrounds"
 
 OTHER_IMAGES = PROJECT_ROOT / "other_images"
