@@ -8,8 +8,6 @@ SCRIPTS = [
     "find_images_to_render.py",
     "render.py",
     "save_csv_to_powerbi.py",
-    "archive_csv.py",
-    "publish.py",
 ]
 
 def run_script(script_name):
