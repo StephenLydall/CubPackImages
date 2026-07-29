@@ -1,6 +1,7 @@
 env:
   SHAREPOINT_FOLDER: "Stephen"
   WORKBOOK_NAME: "Member Database SP.xlsx"
+  WORKBOOK_PATH: "Stephen/Member%20Database%20SP.xlsx"
 
 name: Cub Pack Renderer Pipeline
 
@@ -55,7 +56,7 @@ jobs:
         run: |
           ETAG=$(curl -s \
             -H "Authorization: Bearer $TOKEN" \
-            "https://graph.microsoft.com/v1.0/drives/$DRIVE_ID/root:/${SHAREPOINT_FOLDER}/${WORKBOOK_NAME}" \
+            "https://graph.microsoft.com/v1.0/drives/$DRIVE_ID/root:/${WORKBOOK_PATH}:" \
             | jq -r '.eTag')
 
           echo "CURRENT_ETAG=$ETAG" >> $GITHUB_ENV
@@ -87,7 +88,7 @@ jobs:
         run: |
           curl -L \
             -H "Authorization: Bearer $TOKEN" \
-            "https://graph.microsoft.com/v1.0/drives/$DRIVE_ID/root:/${SHAREPOINT_FOLDER}/${WORKBOOK_NAME}:/content" \
+            "https://graph.microsoft.com/v1.0/drives/$DRIVE_ID/root:/${WORKBOOK_PATH}:/content" \
             --output "${WORKBOOK_NAME}"
             
       - name: Verify workbook
@@ -112,7 +113,7 @@ jobs:
       - name: Save latest ETag
         if: steps.etagcheck.outputs.changed == 'true'
         run: |
-          echo "${CURRENT_ETAG}" > .last_etag
+          echo "$CURRENT_ETAG" > .last_etag
         
       - name: Commit generated files
         if: steps.etagcheck.outputs.changed == 'true'
