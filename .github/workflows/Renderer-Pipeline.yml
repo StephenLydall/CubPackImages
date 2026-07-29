@@ -55,7 +55,7 @@ jobs:
         run: |
           ETAG=$(curl -s \
             -H "Authorization: Bearer $TOKEN" \
-            "https://graph.microsoft.com/v1.0/drives/$DRIVE_ID/root:/Stephen/Member%20Database%20SP.xlsx" \
+            "https://graph.microsoft.com/v1.0/drives/$DRIVE_ID/root:/${SHAREPOINT_FOLDER}/${WORKBOOK_NAME}" \
             | jq -r '.eTag')
 
           echo "CURRENT_ETAG=$ETAG" >> $GITHUB_ENV
@@ -87,25 +87,35 @@ jobs:
         run: |
           curl -L \
             -H "Authorization: Bearer $TOKEN" \
-            "https://graph.microsoft.com/v1.0/drives/$DRIVE_ID/root:/Stephen/Member%20Database%20SP.xlsx:/content" \
-            --output "Member Database SP.xlsx"
+            "https://graph.microsoft.com/v1.0/drives/$DRIVE_ID/root:/${SHAREPOINT_FOLDER}/${WORKBOOK_NAME}:/content" \
+            --output "${WORKBOOK_NAME}"
             
       - name: Verify workbook
+        if: steps.etagcheck.outputs.changed == 'true'
         run: |
-          ls -lh "Member Database SP.xlsx"
-          
+          ls -lh "${WORKBOOK_NAME}"
+
       - name: Setup Python
+        if: steps.etagcheck.outputs.changed == 'true'
         uses: actions/setup-python@v5
         with:
           python-version: "3.x"
 
       - name: Install dependencies
+        if: steps.etagcheck.outputs.changed == 'true'
         run: pip install -r requirements.txt
 
       - name: Run update pipeline
+        if: steps.etagcheck.outputs.changed == 'true'
         run: python update_keys.py
-
+        
+      - name: Save latest ETag
+        if: steps.etagcheck.outputs.changed == 'true'
+        run: |
+          echo "${CURRENT_ETAG}" > .last_etag
+        
       - name: Commit generated files
+        if: steps.etagcheck.outputs.changed == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
