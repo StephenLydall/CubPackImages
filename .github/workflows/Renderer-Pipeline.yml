@@ -7,6 +7,9 @@ name: Cub Pack Renderer Pipeline
 on:
   workflow_dispatch:
 
+  schedule:
+    - cron: "*/5 * * * *"
+
 jobs:
   render:
     runs-on: ubuntu-latest
@@ -45,9 +48,42 @@ jobs:
             -H "Authorization: Bearer $TOKEN" \
             "https://graph.microsoft.com/v1.0/sites/$SITE_ID/drives" \
             | jq -r '.value[] | select(.name=="Documents") | .id')
+
           echo "DRIVE_ID=$DRIVE_ID" >> $GITHUB_ENV
 
+      - name: Get current workbook ETag
+        run: |
+          ETAG=$(curl -s \
+            -H "Authorization: Bearer $TOKEN" \
+            "https://graph.microsoft.com/v1.0/drives/$DRIVE_ID/root:/Stephen/Member%20Database%20SP.xlsx" \
+            | jq -r '.eTag')
+
+          echo "CURRENT_ETAG=$ETAG" >> $GITHUB_ENV
+          echo "Current ETag: $ETAG"
+
+      - name: Check if workbook changed
+        id: etagcheck
+        run: |
+
+          if [ -f ".last_etag" ]; then
+            LAST_ETAG=$(cat .last_etag)
+          else
+            LAST_ETAG=""
+          fi
+
+          echo "Last ETag:    $LAST_ETAG"
+          echo "Current ETag: $CURRENT_ETAG"
+
+          if [ "$LAST_ETAG" = "$CURRENT_ETAG" ]; then
+            echo "Workbook unchanged."
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "Workbook changed."
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
       - name: Download Workbook
+        if: steps.etagcheck.outputs.changed == 'true'
         run: |
           curl -L \
             -H "Authorization: Bearer $TOKEN" \
