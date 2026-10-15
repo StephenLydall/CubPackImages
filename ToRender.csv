@@ -1,4 +1,1 @@
 FullCode,ExpectedFileName,Exists,ToRender
-"R04,AD009,IB024,IB043",r04_ad009_ib024_ib043.png,False,True
-"R03,AD012,AD013",r03_ad012_ad013.png,False,True
-"R04,AD012,AD013,IB013,IB049,IB063",r04_ad012_ad013_ib013_ib049_ib063.png,False,True
