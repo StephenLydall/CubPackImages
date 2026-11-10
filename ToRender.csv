@@ -1,1 +1,9 @@
 FullCode,ExpectedFileName,Exists,ToRender
+"R04,AD009,IB031",r04_ad009_ib031.png,False,True
+"R04,AD009,IB031,IB059",r04_ad009_ib031_ib059.png,False,True
+"R02,AD002,IB031",r02_ad002_ib031.png,False,True
+"R02,IB031,IB059",r02_ib031_ib059.png,False,True
+"R02,AD004,IB031,IB059",r02_ad004_ib031_ib059.png,False,True
+"R03,AD009,IB031",r03_ad009_ib031.png,False,True
+"R01,IB031",r01_ib031.png,False,True
+"R03,Second,IB031",r03_second_ib031.png,False,True
