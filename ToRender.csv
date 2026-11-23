@@ -1,1 +1,3 @@
 FullCode,ExpectedFileName,Exists,ToRender
+"R02,AD009",r02_ad009.png,False,True
+"R01,AD009",r01_ad009.png,False,True
